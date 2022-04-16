@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.example;
+
+option java_package = "com.example";
+option java_multiple_files = true;
+
+service UserService {
+  rpc getUser (UserRequest) returns (UserResponse);
+}
+
+message UserRequest {
+  int32 userId = 1;
+}
+
+message UserResponse {
+  int32 userId = 1;
+  string name = 2;
+
+  int32 numberOfOrders = 3;
+  double totalAmount = 4;
+}

@@ -1,6 +1,7 @@
 package com.example.server;
 
-import com.example.GreeterImpl;
+import com.example.OrderService;
+import com.example.UserService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
@@ -9,25 +10,25 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GreetingServerImpl {
+public class OrderServer {
 
-    private static final Logger logger = Logger.getLogger(GreetingServerImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(UserServer.class.getName());
 
     private Server server;
 
     public void startServer() {
-        int port = 50001;
+        int port = 50006;
 
         try {
             server = ServerBuilder
                     .forPort(port)
-                    .addService(new GreeterImpl())
+                    .addService(new OrderService())
                     .build()
                     .start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
-                    GreetingServerImpl.this.stopServer();
+                    OrderServer.this.stopServer();
                 } catch (InterruptedException e) {
                     logger.log(Level.SEVERE, "Server shutdown error", e);
                 }
@@ -50,10 +51,10 @@ public class GreetingServerImpl {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        GreetingServerImpl greetingServer = new GreetingServerImpl();
+        OrderServer orderServer = new OrderServer();
 
-        greetingServer.startServer();
-        greetingServer.blockUntilShutdown();
+        orderServer.startServer();
+        orderServer.blockUntilShutdown();
     }
 
 }

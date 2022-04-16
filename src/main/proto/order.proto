@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.example;
+
+option java_package = "com.example";
+option java_multiple_files = true;
+
+service OrderService {
+  rpc getOrdersForUser (OrdersForUserRequest) returns (OrdersForUserResponse);
+}
+
+message OrdersForUserRequest {
+  int32 userId = 1;
+}
+
+message OrdersForUserResponse {
+  repeated Order order = 2;
+}
+
+message Order {
+  int32 userId = 1;
+  int32 orderId = 2;
+  int32 numberOfItems = 3;
+  double amount = 4;
+}
