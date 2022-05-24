@@ -1,6 +1,8 @@
 package com.example.server;
 
 import com.example.UserService;
+
+import com.example.functional.ThrowingRunnable;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
@@ -15,31 +17,28 @@ public class UserServer {
 
     private Server server;
 
-    public void startServer() {
+    public void startServer() throws IOException {
         int port = 50005;
 
-        try {
-            server = ServerBuilder
-                    .forPort(port)
-                    .addService(new UserService())
-                    .build()
-                    .start();
+        server = ServerBuilder
+                .forPort(port)
+                .addService(new UserService())
+                .build()
+                .start();
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    UserServer.this.stopServer();
-                } catch (InterruptedException e) {
-                    logger.log(Level.SEVERE, "Server shutdown error", e);
-                }
-            }));
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error starting the server", e);
-        }
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(
+                        ThrowingRunnable.handleThrowingRunnable(
+                                UserServer.this::stopServer,
+                                exception -> logger.log(Level.SEVERE, "Server shutdown error", exception.getMessage()))));
+
+        logger.log(Level.INFO, "Server started at port " + port);
     }
 
     public void stopServer() throws InterruptedException {
         if (server != null) {
             server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
+            logger.log(Level.INFO, "Server stopped");
         }
     }
 
@@ -49,11 +48,10 @@ public class UserServer {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         UserServer userServer = new UserServer();
 
         userServer.startServer();
         userServer.blockUntilShutdown();
     }
-
 }
