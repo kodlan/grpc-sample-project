@@ -2,6 +2,9 @@ package com.example;
 
 import io.grpc.stub.StreamObserver;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CalcService extends CalcServiceGrpc.CalcServiceImplBase {
 
     @Override
@@ -24,5 +27,30 @@ public class CalcService extends CalcServiceGrpc.CalcServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void prime(PrimeRequest request, StreamObserver<PrimeResponse> responseObserver) {
+        List<Integer> primes = getPrimes(request.getNumber());
+
+        primes.forEach(prime -> responseObserver.onNext(PrimeResponse.newBuilder().setPrime(prime).build()));
+
+        responseObserver.onCompleted();
+    }
+
+    private List<Integer> getPrimes(int number) {
+        List<Integer> primes = new ArrayList<>();
+
+        int k = 2;
+        while (number > 1) {
+            if (number % k == 0) {
+                primes.add(k);
+                number = number / k;
+            } else {
+                k ++;
+            }
+        }
+
+        return primes;
     }
 }

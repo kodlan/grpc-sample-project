@@ -7,6 +7,8 @@ option java_multiple_files = true;
 
 service CalcService {
   rpc calc (CalcRequest) returns (CalcResponse);
+
+  rpc prime (PrimeRequest) returns (stream PrimeResponse);
 }
 
 message CalcRequest {
@@ -24,4 +26,12 @@ message CalcRequest {
 
 message CalcResponse {
   int32 result = 1;
+}
+
+message PrimeRequest {
+  int32 number = 1;
+}
+
+message PrimeResponse {
+  int32 prime = 1;
 }
