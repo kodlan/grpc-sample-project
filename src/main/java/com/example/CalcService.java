@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CalcService extends CalcServiceGrpc.CalcServiceImplBase {
 
@@ -39,6 +40,31 @@ public class CalcService extends CalcServiceGrpc.CalcServiceImplBase {
     responseObserver.onCompleted();
   }
 
+
+  @Override
+  public StreamObserver<AverageRequest> average(StreamObserver<AverageResponse> responseObserver) {
+
+    List<Integer> numbers = new ArrayList<>();
+
+    return new StreamObserver<>() {
+      @Override
+      public void onNext(AverageRequest averageRequest) {
+        numbers.add(averageRequest.getNumber());
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        responseObserver.onError(throwable);
+      }
+
+      @Override
+      public void onCompleted() {
+        responseObserver.onNext(
+            AverageResponse.newBuilder().setAverage(getAverage(numbers)).build());
+      }
+    };
+  }
+
   private List<Integer> getPrimes(int number) {
     List<Integer> primes = new ArrayList<>();
 
@@ -53,5 +79,10 @@ public class CalcService extends CalcServiceGrpc.CalcServiceImplBase {
     }
 
     return primes;
+  }
+
+  private float getAverage(List<Integer> numbers) {
+    int sum = numbers.stream().mapToInt(Integer::intValue).sum();
+    return (float) sum / (float) numbers.size();
   }
 }

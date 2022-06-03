@@ -9,6 +9,8 @@ service CalcService {
   rpc calc (CalcRequest) returns (CalcResponse);
 
   rpc prime (PrimeRequest) returns (stream PrimeResponse);
+
+  rpc average (stream AverageRequest) returns (AverageResponse);
 }
 
 message CalcRequest {
@@ -34,4 +36,12 @@ message PrimeRequest {
 
 message PrimeResponse {
   int32 prime = 1;
+}
+
+message AverageRequest {
+  int32 number = 1;
+}
+
+message AverageResponse {
+  float average = 1;
 }
